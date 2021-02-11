@@ -4,106 +4,122 @@ extern crate serde_json;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Serialize, Deserialize)]
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
+use std::io::Result;
+
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Settings {
-  version: f32,
-  schema_version: u16,
-  display_hints: Vec<DisplayHint>,
-  modes: Vec<Mode>,
-  filters: Vec<Filter>,
-  commands: Vec<Command>,
-  status: Status,
-  services: Value,
-  #[serde(default)]
-  camera_mode_map: Vec<CameraMode>,
-  info: Info,
+  pub version: f32,
+  pub schema_version: u16,
+  pub display_hints: Vec<DisplayHint>,
+  pub modes: Vec<Mode>,
+  pub filters: Vec<Filter>,
+  pub commands: Vec<Command>,
+  pub status: Status,
+  pub services: HashMap<String, Service>,
+  pub camera_mode_map: Vec<CameraMode>,
+  pub info: Info,
 }
 
-#[derive(Serialize, Deserialize)]
-struct DisplayHint {
-  key: String,
-  display_name: String,
-  settings: Vec<DisplayHintSettings>,
-  commands: Vec<DisplayHintCommand>,
+impl Settings {
+  pub fn get_command(&self, key: &str) -> Option<Command> {
+    self.commands.clone().into_iter().find(|e| e.key == key)
+  }
 }
 
-#[derive(Serialize, Deserialize)]
-struct DisplayHintSettings {
-  setting_id: u16,
-  widget_type: String,
-  precedence: u16,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct DisplayHint {
+  pub key: String,
+  pub display_name: String,
+  pub settings: Vec<DisplayHintSettings>,
+  pub commands: Vec<DisplayHintCommand>,
 }
 
-#[derive(Serialize, Deserialize)]
-struct DisplayHintCommand {
-  command_key: String,
-  precedence: u16,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct DisplayHintSettings {
+  pub setting_id: u16,
+  pub widget_type: String,
+  pub precedence: u16,
 }
 
-#[derive(Serialize, Deserialize)]
-struct Mode {
-  path_segment: String,
-  display_name: String,
-  value: u16,
-  settings: Vec<ModeSetting>,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct DisplayHintCommand {
+  pub command_key: String,
+  pub precedence: u16,
 }
 
-#[derive(Serialize, Deserialize)]
-struct ModeSetting {
-  path_segment: String,
-  display_name: String,
-  id: u16,
-  options: Vec<ModeSettingOption>,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Mode {
+  pub path_segment: String,
+  pub display_name: String,
+  pub value: u16,
+  pub settings: Vec<ModeSetting>,
 }
 
-#[derive(Serialize, Deserialize)]
-struct ModeSettingOption {
-  display_name: String,
-  value: u32,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct ModeSetting {
+  pub path_segment: String,
+  pub display_name: String,
+  pub id: u16,
+  pub options: Vec<ModeSettingOption>,
 }
 
-#[derive(Serialize, Deserialize)]
-struct Filter {
-  activated_by: Vec<Value>,
-  blacklist: FilterBlacklist,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct ModeSettingOption {
+  pub display_name: String,
+  pub value: u32,
 }
 
-#[derive(Serialize, Deserialize)]
-struct FilterBlacklist {
-  setting_id: u16,
-  values: Vec<u16>,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Filter {
+  pub activated_by: Vec<Value>,
+  pub blacklist: FilterBlacklist,
 }
 
-#[derive(Serialize, Deserialize)]
-struct Command {
-  key: String,
-  display_name: String,
-  url: String,
-  widget_type: String,
-  #[serde(default)]
-  deprecated: bool,
-  network_types: Vec<String>,
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct FilterBlacklist {
+  pub setting_id: u16,
+  pub values: Vec<u16>,
 }
 
-#[derive(Serialize, Deserialize)]
-struct Status {
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Command {
+  pub key: String,
+  pub display_name: String,
+  pub url: String,
+  pub widget_type: String,
+  pub deprecated: bool,
+  pub network_types: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Status {
   groups: Vec<StatusGroup>,
 }
 
-#[derive(Serialize, Deserialize)]
-struct StatusGroup {
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct StatusGroup {
   group: String,
   fields: Vec<StatusField>,
 }
 
-#[derive(Serialize, Deserialize)]
-struct StatusField {
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct StatusField {
   id: u16,
   name: String,
 }
 
-#[derive(Serialize, Deserialize)]
-struct CameraMode {
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Service {
+  pub version: u8,
+  pub description: String,
+  pub url: String,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct CameraMode {
   description: String,
   mapping_type: String,
   mode_value: u16,
@@ -112,8 +128,8 @@ struct CameraMode {
   wsdk_mode_key: String,
 }
 
-#[derive(Serialize, Deserialize)]
-struct Info {
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Info {
   model_number: u128,
   model_name: String,
   firmware_version: String,
@@ -123,6 +139,19 @@ struct Info {
   ap_ssid: String,
   ap_has_default_credentials: String,
   git_sha1: String,
-  #[serde(default)]
   capabilities: String,
+}
+
+pub fn get_settings_from(setting_file_path: String) -> Settings {
+  let file: Result<File> = File::open(&mut setting_file_path.clone());
+  let string: String = read_file_to_string(&mut file.unwrap());
+
+  json::from_str(&string).unwrap()
+}
+
+fn read_file_to_string(file: &mut File) -> String {
+  let mut content = String::new();
+  file.read_to_string(&mut content).unwrap();
+
+  content
 }
