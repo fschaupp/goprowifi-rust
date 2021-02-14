@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Launch",
+      "program": "${workspaceFolder}/target/debug/goprowifihack",
+      "windows": {
+        "program": "${workspaceFolder}/target/debug/goprowifihack.exe"
+      },
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "sourceLanguages": [
+        "rust"
+      ],
+
+      "args": ["dependencies/goprowifihack/HERO5/gpControl-HERO5Session.json", "start"] // Example config for HERO5 Session starting the stream
+    }
+  ],
+}
