@@ -1,11 +1,12 @@
 use crate::settingparser::*;
+use isahc::prelude::*;
 
 const BASE_PATH: &str = "http://10.5.5.9";
 const CONTROL: &str = "/gp/gpControl";
 
-fn request(path: &str) -> Result<String, Box<dyn std::error::Error>> {
-  let resp = reqwest::blocking::get(path)?.text()?;
-  Ok(String::from(resp))
+fn request(path: &str) -> Result<String, isahc::Error> {
+  let mut response = isahc::get(path)?;
+  Ok(response.text()?)
 }
 
 fn call(path: &str) {

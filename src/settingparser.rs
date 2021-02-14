@@ -1,13 +1,11 @@
-extern crate serde;
-extern crate serde_json;
+extern crate miniserde as serde;
 
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde::json::Value;
+use serde::{json, Deserialize, Serialize};
 
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::Read;
-use std::io::Result;
+use std::io::{Read, Result};
 
 #[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Settings {
@@ -130,7 +128,7 @@ pub struct CameraMode {
 
 #[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Info {
-  model_number: u128,
+  model_number: usize,
   model_name: String,
   firmware_version: String,
   serial_number: String,

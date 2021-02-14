@@ -1,4 +1,4 @@
-extern crate serde_json as json;
+extern crate miniserde as json;
 
 pub mod settingparser;
 use settingparser::{get_settings_from, Settings};
