@@ -1,5 +1,5 @@
 # TL;DR;
-Use ![OpenGoPro](https://gopro.github.io/OpenGoPro)
+Use [OpenGoPro](https://gopro.github.io/OpenGoPro)
 
 # goprowifi-rust ![Rust](https://github.com/fschaupp/goprowifi-rust/workflows/Rust/badge.svg?branch=main)
 
