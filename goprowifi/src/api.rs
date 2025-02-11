@@ -1,12 +1,18 @@
-use crate::settingparser::*;
+use crate::settingparser::{Command, ModeSetting, MultiShotMode, PhotoMode, Settings, VideoMode};
 use isahc::prelude::*;
 
 const BASE_PATH: &str = "http://10.5.5.9";
 const CONTROL: &str = "/gp/gpControl";
 
+#[cfg(not(test))]
 fn request(path: &str) -> Result<String, isahc::Error> {
-  let mut response = isahc::get(path)?;
-  Ok(response.text()?)
+    let mut response = isahc::get(path)?;
+    Ok(response.text()?)
+}
+
+#[cfg(test)]
+fn request(path: &str) -> Result<String, isahc::Error> {
+    Ok(String::from(path))
 }
 
 fn call(path: &String) {
@@ -118,7 +124,7 @@ impl Settings {
       self.set_mode_submode("multi_shot", "current_sub_mode", mode_value);
   }
 
-  pub fn set_mode(&self, mode_name: &str, value: u32) {
+  pub fn set_mode(&self, _mode_name: &str, value: u32) {
     let command = self.get_command("GPCAMERA_MODE").unwrap();
 
     let mut full_path = [CONTROL, command.url.as_str(), "?p="].concat();
@@ -127,7 +133,7 @@ impl Settings {
     call(&full_path);
   }
 
-  pub fn set_mode_submode(&self, mode_name: &str, submode_name: &str, value: u32) {
+  pub fn set_mode_submode(&self, _mode_name: &str, _submode_name: &str, value: u32) {
     let command = self.get_command("GPCAMERA_SUBMODE").unwrap();
 
     let mut full_path = [CONTROL, command.url.as_str(), "?p="].concat();

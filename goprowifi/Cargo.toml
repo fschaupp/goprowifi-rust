@@ -1,11 +1,9 @@
 [package]
-name = "goprowifihack"
+name = "goprowifi"
 version = "0.1.0"
 authors = ["fschaupp"]
 edition = "2018"
 
 [dependencies]
 miniserde = "0.1"
-goprowifi = { path = "./goprowifi" }
-
-[dev-dependencies]
+isahc = "1.7.2"

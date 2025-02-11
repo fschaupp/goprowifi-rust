@@ -1,10 +1,6 @@
 extern crate miniserde as json;
-
-pub mod settingparser;
-use settingparser::{get_settings_from, Settings};
-
-mod api;
-use api::*;
+use goprowifi::settingparser::{get_settings_from, Settings};
+use goprowifi::api::*;
 
 fn main() {
     let mut args: Vec<String> = std::env::args().collect();
